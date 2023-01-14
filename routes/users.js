@@ -1,9 +1,15 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const helpers = require('../helpers/util')
+const saltRounds = 10;
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+/* GET home page. */
+module.exports = function (db) {
 
-module.exports = router;
+  router.get('/user', helpers.isLoggedIn,function (req, res, next) {
+    res.render('user');
+  });
+
+  return router;
+}

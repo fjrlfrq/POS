@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const helpers = require('../helpers/util')
 const saltRounds = 10;
 
-
 module.exports = function (db) {
 
   router.get('/', function (req, res, next) {
