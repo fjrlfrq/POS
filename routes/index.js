@@ -65,9 +65,5 @@ module.exports = function (db) {
     res.render('index', { user: req.session.user });
   });
 
-  router.get('/user', helpers.isLoggedIn, function (req, res, next) {
-    res.render('user', { user: req.session.user });
-  });
-
   return router;
 }
