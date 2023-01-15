@@ -36,7 +36,7 @@ module.exports = function (db) {
     })
   });
 
-  router.get('/delete/:id', function (req, res, next) {
+  router.get('/delete/:id', helpers.isLoggedIn, function (req, res, next) {
     const index = req.params.id
     db.query(`DELETE FROM users WHERE userid=$1`, [index], (err) => {
       if (err) return console.log('gagal ambil data', err)
@@ -44,8 +44,22 @@ module.exports = function (db) {
     })
   })
 
-  router.get('/edit', helpers.isLoggedIn, function (req, res, next) {
-    res.render('Users/edit', { user: req.session.user });
+  //EDITNYA BELUM BISA
+  router.get('/edit/:id', helpers.isLoggedIn, function (req, res, next) {
+    const index = req.params.id
+    db.query('Select * from users where userid=$1', [index], (err, data) => {
+      if (err) return console.log('gagal ambil data', err);
+      res.render('Users/edit', { data: data.rows[0], user: req.session.user })
+    })
+  });
+
+  router.post('/edit/:id', helpers.isLoggedIn, function (req, res, next) {
+    const index = req.params.id
+    const { email, name, role } = req.body
+    db.query(`Update users set email='$1', name='$2', role='$3' where userid=$4`, [email, name, role, index], (err, rows) => {
+      if (err) return console.log('gagal masukkan data', err);
+      res.redirect('/user')
+    })
   });
 
   return router;
