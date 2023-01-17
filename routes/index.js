@@ -10,28 +10,33 @@ module.exports = function (db) {
     res.render('login', { info: req.flash('info') });
   });
 
+  //Ganti ama try catch
   router.post('/', function (req, res, next) {
-    const { email, name, password, role } = req.body
-    db.query('SELECT * FROM users where email = $1', [email], (err, data) => {
-      if (err) return res.send('email ', err)
+    try {
+      const { email, password } = req.body
+      db.query('SELECT * FROM users where email = $1', [email], (err, data) => {
+        if (err) return res.send('email ', err)
 
-      if (data.rows.length == 0) {
-        req.flash('info', 'Email tidak terdaftar')
-        return res.redirect('/')
-      }
-
-      bcrypt.compare(password, data.rows[0].password, function (err, result) {
-        if (err) return res.send(err)
-
-        if (!result) {
-          req.flash('info', 'Password salah')
+        if (data.rows.length == 0) {
+          req.flash('info', 'Email tidak terdaftar')
           return res.redirect('/')
         }
 
-        req.session.user = data.rows[0]
-        res.redirect('/index')
+        bcrypt.compare(password, data.rows[0].password, function (err, result) {
+          if (err) return res.send(err)
+
+          if (!result) {
+            req.flash('info', 'Password salah')
+            return res.redirect('/')
+          }
+
+          req.session.user = data.rows[0]
+          res.redirect('/index')
+        });
       });
-    });
+    } catch (error) {
+      console.log('gagal login', error);
+    }
   });
 
   router.get('/register', function (req, res, next) {

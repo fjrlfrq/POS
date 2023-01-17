@@ -5,7 +5,8 @@ const helpers = require('../helpers/util')
 const saltRounds = 10;
 
 module.exports = function (db) {
-
+   
+  //Ganti ama try catch
   router.get('/', function (req, res, next) {
     res.render('user', { info: req.flash('info') });
   });
@@ -16,10 +17,6 @@ module.exports = function (db) {
       res.render('Users/user', { daftar: data.rows, user: req.session.user })
     })
   });
-
-  // router.get('/add', helpers.isLoggedIn, function (req, res, next) {
-  //   res.render('Users/add', { user: req.session.user });
-  // });
 
   router.get('/add', function (req, res, next) {
     res.render('Users/add', { user: req.session.user });
