@@ -17,6 +17,7 @@ const pool = new Pool({
   port: 5432,
 })
 
+const loginRouter = require('./routes/login')(pool);
 const indexRouter = require('./routes/index')(pool);
 const usersRouter = require('./routes/users')(pool);
 
@@ -38,6 +39,7 @@ app.use(session({
 }))
 app.use(flash());
 
+app.use('/', loginRouter);
 app.use('/', indexRouter);
 app.use('/', usersRouter);
 
