@@ -6,8 +6,8 @@ const saltRounds = 10;
 
 module.exports = function (db) {
 
-  router.get('/index', helpers.isLoggedIn, function (req, res, next) {
-    res.render('index', { user: req.session.user });
+  router.get('/', helpers.isLoggedIn, function (req, res, next) {
+    res.render('Dashboard/index', { user: req.session.user });
   });
 
   

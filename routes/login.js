@@ -32,7 +32,7 @@ module.exports = function (db) {
             req.session.user = user
             delete user.password
 
-            res.redirect('/index')
+            res.redirect('/dashboard')
         } catch (error) {
             console.log('login error ', error);
         }

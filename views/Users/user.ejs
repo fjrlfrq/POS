@@ -7,103 +7,93 @@
 
             <%- include('../partials/sidebar.ejs') %>
 
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
+            <div class="container-fluid">
 
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Users</h1>
-                    <p>This is data of Users</p>
-
+                <!-- Page Heading -->
+                    <h1 class="h3 mb-0 text-gray-800">Users</h1>
+                    <p class="mb-4">This is data of Users</p>
+                    
                     <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <a href="/add" class="btn btn-primary btn-icon-split">
-                                <span class="icon text-white-50">
-                                    <i class="fas fa-plus"></i>
-                                </span>
-                                <span class="text">Add</span>
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>User ID</th>
-                                            <th>Email</th>
-                                            <th>Name</th>
-                                            <th>Role</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% daftar.forEach((item)=> { %>
-                                            <tr>
-                                                <td>
-                                                    <%= item.userid %>
-                                                </td>
-                                                <td>
-                                                    <%= item.name %>
-                                                </td>
-                                                <td>
-                                                    <%= item.email %>
-                                                </td>
-                                                <td>
-                                                    <%= item.role %>
-                                                </td>
-                                                <td>
-                                                    <a href="/edit/<%= item.userid %>"
-                                                        class="btn btn-circle btn-success"><i
-                                                            class="fas fa-info-circle"></i>
-                                                    </a>
-                                                    <a class="btn btn-circle btn-danger"
-                                                        href="/delete/<%= item.userid %>" data-toggle="modal"
-                                                        data-target="#delete<%= item.userid %>">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
-                                                    <!-- Delete Modal-->
-                                                    <div class="modal fade" id="delete<%= item.userid %>" tabindex="-1" role="dialog"
-                                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="exampleModalLabel">
-                                                                        Delete Confirmation</h5>
-                                                                    <button class="close" type="button"
-                                                                        data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">×</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body">Are you sure, you want delete it
-                                                                    ?</div>
-                                                                <div class="modal-footer">
-                                                                    <button class="btn btn-secondary" type="button"
-                                                                        data-dismiss="modal">Cancel</button>
-                                                                    <!-- <button class="btn btn-primary" type="button" data-dismiss="modal">Delete</button> -->
-                                                                    <a class="btn btn-primary" href="/delete/<%= item.userid %>">Delete</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <% }) %>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th>User ID</th>
-                                            <th>Email</th>
-                                            <th>Name</th>
-                                            <th>Role</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <a href="/users/add" class="btn btn-primary btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span class="text">Add</span>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="usertable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Email</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+
+                                <tfoot>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Email</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
-
                 </div>
+
+            </div>
                 <%- include('../partials/logout.ejs') %>
         </div>
         <%- include('../partials/footer.ejs') %>
+        <script>
+            $(document).ready(function () {
+                $('#usertable').DataTable({
+                    "lengthMenu": [[3, 10, 100, 4], [3, 10, "All", 5]],
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": "/users/datatable",
+                    "columns": [
+                        { "data": "userid" },
+                        { "data": "email" },
+                        { "data": "name" },
+                        { "data": "role" },
+                        {
+                            "data": "userid",
+                            render: function (data) {
+                                return `
+                   <a href="/users/edit/${data}" class="btn btn-circle btn-success"> <i class="fas fa-info-circle "></i></a>
+                   <a href="#" class="btn btn-circle btn-danger" data-toggle="modal" data-target="#modalDelete${data}"> <i class=" fas fa-solid fa-trash"></i></a>
+                       <div class="modal fade" id="modalDelete${data}" tabindex="-1" role="dialog"
+                                           aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                           <div class="modal-dialog" role="document">
+                                               <div class="modal-content">
+                                                   <div class="modal-header">
+                                                       <h5 class="modal-title" id="exampleModalLabel">Deleted Confirmation</h5>
+                                                       <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                           <span aria-hidden="true">×\</span>
+                                                       </button>
+                                                   </div>
+                                                   <div class="modal-body">Are you sure, you want delete it?</div>
+                                                   <div class="modal-footer">
+                                                       <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
+                                                       <a class="btn btn-primary" href="/users/delete/${data}">Yes</a>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </div>
+                   `
+                            }
+                        }
+                    ]
+                });
+            });
+        </script>

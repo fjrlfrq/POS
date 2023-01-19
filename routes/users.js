@@ -1,62 +1,102 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const helpers = require('../helpers/util')
+const { isLoggedIn } = require('../helpers/util')
 const saltRounds = 10;
 
 module.exports = function (db) {
-   
-  //Ganti ama try catch
-  router.get('/', function (req, res, next) {
-    res.render('user', { info: req.flash('info') });
+
+  router.get('/', isLoggedIn, function (req, res, next) {
+    res.render('Users/user', {user: req.session.user, currentPage: 'POS - Users'});
   });
 
-  router.get('/user', helpers.isLoggedIn, function (req, res, next) {
-    db.query('Select * from users', (err, data) => {
-      if (err) return console.log('gagal ambil data', err);
-      res.render('Users/user', { daftar: data.rows, user: req.session.user })
-    })
-  });
+  router.get('/datatable', async (req, res) => {
+    let params = []
 
-  router.get('/add', function (req, res, next) {
-    res.render('Users/add', { user: req.session.user });
-  });
+    if(req.query.search.value){
+        params.push(`email ilike '%${req.query.search.value}%'`)
+    }
 
-  router.post('/add', function (req, res, next) {
-    const { emails, names, passwords, roles } = req.body
-    bcrypt.hash(passwords, saltRounds, function (err, hash) {
-      if (err) return console.log('gagal masukkan data', err);
-      db.query('INSERT INTO users (email, name, password, role) VALUES ($1, $2, $3, $4)', [emails, names, hash, roles], (err, data) => {
-        if (err) return console.log('gagal masukkan data', err);
-        res.redirect('/user')
-      })
-    })
-  });
+    if(req.query.search.value){
+      params.push(`name ilike '%${req.query.search.value}%'`)
+    }
 
-  router.get('/delete/:id', helpers.isLoggedIn, function (req, res, next) {
-    const index = req.params.id
-    db.query(`DELETE FROM users WHERE userid=$1`, [index], (err) => {
-      if (err) return console.log('gagal ambil data', err)
-      res.redirect('/user')
-    })
+    const limit = req.query.length
+    const offset = req.query.start
+    const sortBy = req.query.columns[req.query.order[0].column].data
+    const sortMode = req.query.order[0].dir
+
+    const total = await db.query(`select count(*) as total from users${params.length > 0 ? ` where ${params.join(' or ')}` : ''}`)
+    const data = await db.query(`select * from users${params.length > 0 ? ` where ${params.join(' or ')}` : ''} order by ${sortBy} ${sortMode} limit ${limit} offset ${offset} `)
+    const response = {
+        "draw": Number(req.query.draw),
+        "recordsTotal": total.rows[0].total,
+        "recordsFiltered": total.rows[0].total,
+        "data": data.rows
+      }
+    res.json(response)
   })
 
-  //EDITNYA BELUM BISA
-  router.get('/edit/:id', helpers.isLoggedIn, function (req, res, next) {
-    const index = req.params.id
-    db.query('Select * from users where userid=$1', [index], (err, data) => {
-      if (err) return console.log('gagal ambil data', err);
-      res.render('Users/edit', { data: data.rows[0], user: req.session.user })
-    })
+  
+  router.get('/add',isLoggedIn, function (req, res, next) {
+    res.render('Users/add', {
+      user: req.session.user,
+      currentPage: 'POS - Users',
+      successMessage: req.flash('successMessage'),
+      failureMessage: req.flash('failureMessage')
+  });
   });
 
-  router.post('/edit/:id', helpers.isLoggedIn, function (req, res, next) {
-    const index = req.params.id
-    const { email, name, role } = req.body
-    db.query(`Update users set email='$1', name='$2', role='$3' where userid=$4`, [email, name, role, index], (err, rows) => {
-      if (err) return console.log('gagal masukkan data', err);
-      res.redirect('/user')
-    })
+  router.post('/add', isLoggedIn, async function (req, res, next) {
+    try {
+      const { emails, names, passwords,roles } = req.body
+      const datadb = await db.query('SELECT * FROM users where email = $1', [emails])
+      if (datadb.rows.length > 0) {
+        req.flash('failureMessage', 'email already registered')
+        return res.redirect('/users/add')
+      }
+
+      const hash = bcrypt.hashSync(passwords, saltRounds);
+      await db.query("INSERT INTO users(email, name, password, role) VALUES ($1, $2, $3, $4)", [emails, names, hash, roles])
+      res.redirect('/users')
+    } catch (error) {
+      console.log(error);
+      res.send(error)
+    }
+  });
+
+  router.get('/edit/:userid', isLoggedIn, async function (req, res, next) {
+    try {
+      const id = req.params.userid
+      const {rows: dataedit} = await db.query("SELECT * FROM users WHERE userid = $1", [id])
+      res.render('Users/edit', {data: dataedit[0], user: req.session.user, currentPage: 'POS - Users'})
+    } catch (error) {
+      console.log(error);
+      res.send(error)
+    }
+  });
+
+  router.post('/edit/:userid', isLoggedIn, async function (req, res, next) {
+    try {
+      const id = req.params.userid
+      const { email, name, role } = req.body
+      await db.query("UPDATE users SET email = $1, name = $2, role = $3 WHERE userid = $4", [email, name, role, id])
+      res.redirect('/users')
+    } catch (error) {
+      console.log(error);
+      res.send(error)
+    }
+  });
+
+  router.get('/delete/:userid', isLoggedIn, async function (req, res, next) {
+    try {
+      const id = req.params.userid
+      await db.query("DELETE FROM users WHERE userid = $1", [id])
+      res.redirect('/users')
+    } catch (error) {
+      console.log(error);
+      res.send(error)
+    }
   });
 
   return router;
