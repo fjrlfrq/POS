@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const fileUpload = require('express-fileupload')
 const session = require('express-session')
 const flash = require('connect-flash');
 
@@ -20,6 +21,7 @@ const pool = new Pool({
 const loginRouter = require('./routes/login')(pool);
 const dashboardRouter = require('./routes/dashboard')(pool);
 const unitsRouter = require('./routes/units')(pool);
+const goodsRouter = require('./routes/goods')(pool);
 const usersRouter = require('./routes/users')(pool);
 
 const app = express();
@@ -39,10 +41,13 @@ app.use(session({
   saveUninitialized: true
 }))
 app.use(flash());
+app.use(fileUpload())
 
+//router
 app.use('/', loginRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/units', unitsRouter);
+app.use('/goods', goodsRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

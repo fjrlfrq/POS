@@ -21,6 +21,10 @@ module.exports = function (db) {
       params.push(`name ilike '%${req.query.search.value}%'`)
     }
 
+    if(req.query.search.value){
+      params.push(`role ilike '%${req.query.search.value}%'`)
+    }
+
     const limit = req.query.length
     const offset = req.query.start
     const sortBy = req.query.columns[req.query.order[0].column].data

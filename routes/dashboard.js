@@ -7,7 +7,7 @@ const saltRounds = 10;
 module.exports = function (db) {
 
   router.get('/', helpers.isLoggedIn, function (req, res, next) {
-    res.render('Dashboard/index', { user: req.session.user });
+    res.render('Dashboard/index', { user: req.session.user, currentPage: 'POS - Dashboard' });
   });
 
   
