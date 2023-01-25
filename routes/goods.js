@@ -114,10 +114,11 @@ module.exports = function (db) {
       } else {
         const uploadFile = req.files.picture;
         const fileName = `${Date.now()}-${uploadFile.name}`
-        const uploadPath = path.join(__dirname, '..', 'public', 'images', 'upload', fileName);
+        const uploadPath = path.join(__dirname, '..', 'public', 'image', 'upload', fileName);
 
         uploadFile.mv(uploadPath, async function (err) {
           if (err) {
+            console.log(err);
             return res.status(500).send(err);
           }
           await db.query("UPDATE goods SET name = $1, stock = $2, purchaseprice = $3, sellingprice = $4, unit = $5, picture = $6 WHERE barcode = $7",
