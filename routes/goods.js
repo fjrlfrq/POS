@@ -58,7 +58,7 @@ module.exports = function (db) {
         return res.redirect('/goods/add')
       }
 
-      if (!req.files || Object.keys(req.files).length === 0) {
+      if (!req.files || Object.keys(req.files).length === 1) {
         res.status(400).send('No files were uploaded.');
         return;
       }

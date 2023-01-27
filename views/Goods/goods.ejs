@@ -84,7 +84,7 @@
                         "data": "picture",
                         render: function(data){
                             return `
-                            <img src="/image/upload/${data}" alt="" width="100">`
+                            <img src="/image/upload/${data ? data: 'no-image.png'}" alt="" width="100">`
                         }
                     },
                         {
