@@ -22,6 +22,7 @@ const loginRouter = require('./routes/login')(pool);
 const dashboardRouter = require('./routes/dashboard')(pool);
 const unitsRouter = require('./routes/units')(pool);
 const goodsRouter = require('./routes/goods')(pool);
+const suppliersRouter = require('./routes/suppliers')(pool);
 const usersRouter = require('./routes/users')(pool);
 
 const app = express();
@@ -48,6 +49,7 @@ app.use('/', loginRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/units', unitsRouter);
 app.use('/goods', goodsRouter);
+app.use('/suppliers', suppliersRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
