@@ -103,5 +103,73 @@ module.exports = function (db) {
     }
   });
 
+  router.get('/profile',isLoggedIn, function (req, res, next) {
+    res.render('Users/profile',{
+      user: req.session.user,
+      currentPage: 'POS - Users',
+      successMessage: req.flash('successMessage'),
+      failureMessage: req.flash('failureMessage')
+    });
+  });
+
+  router.post('/profile',isLoggedIn, async function (req, res, next) {
+    try {
+      const id = req.session.user.userid
+      const { email, name } = req.body
+      await db.query("UPDATE users SET email = $1, name = $2 WHERE userid = $3", [email, name, id])
+
+      const {rows: dataprofile} = await db.query("SELECT * FROM users WHERE email = $1", [email])
+
+      const data = dataprofile[0]
+      req.session.user = data
+      req.flash('successMessage', 'your profile has been update')
+
+
+      res.redirect('/users/profile')
+    } catch (error) {
+      console.log(error);
+      res.send(error)
+    }
+  });
+
+  router.get('/changepassword',isLoggedIn, function (req, res, next) {
+    res.render('Users/changepassword', {
+      user: req.session.user,
+      currentPage: 'POS - Users',
+      successMessage: req.flash('successMessage'),
+      failureMessage: req.flash('failureMessage')
+    });
+  });
+
+  router.post('/changepassword',isLoggedIn,  async function (req, res, next) {
+    try {
+      const id = req.session.user.userid
+      const { oldpassword, newpassword, retypepassword } = req.body
+
+      const {rows: datadb} = await db.query('SELECT * FROM users where userid = $1', [id]);
+
+
+      const passcheck = bcrypt.compareSync(oldpassword, datadb[0].password);
+      if (!passcheck) {
+        req.flash('failureMessage', 'Old Password is Wrong')
+        return res.redirect('/users/changepassword')
+      }
+
+      if (newpassword != retypepassword ) {
+        req.flash('failureMessage', `Retype Password is doesn't match`)
+        return res.redirect('/users/changepassword')
+      }
+      
+      const newpass = bcrypt.hashSync(newpassword, saltRounds);
+      await db.query("UPDATE users SET password = $1 WHERE userid = $2", [newpass, id])
+      req.flash('successMessage', `your password has been updated`)
+
+
+      res.redirect('/users/changepassword')
+    } catch (error) {
+      console.log('changepassword error ', error);
+    }
+  });
+
   return router;
 }
