@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { isLoggedIn } = require('../helpers/util')
+const { isAdmin } = require('../helpers/util')
 const path = require('path')
 
 module.exports = function (db) {
 
-  router.get('/', isLoggedIn, function (req, res, next) {
+  router.get('/', isAdmin, function (req, res, next) {
     res.render('Goods/goods', { user: req.session.user, currentPage: 'POS - Goods' });
   });
 
@@ -36,7 +36,7 @@ module.exports = function (db) {
     res.json(response)
   })
 
-  router.get('/add', isLoggedIn, async function (req, res, next) {
+  router.get('/add', isAdmin, async function (req, res, next) {
     const { rows: dataUnit } = await db.query("SELECT * FROM units")
     res.render('Goods/add',
       {
@@ -48,7 +48,7 @@ module.exports = function (db) {
       });
   });
 
-  router.post('/add', isLoggedIn, async function (req, res, next) {
+  router.post('/add', isAdmin, async function (req, res, next) {
     try {
       const { barcodes, names, stocks, purchaseprices, sellingprices, units } = req.body
       const datadb = await db.query('SELECT * FROM goods WHERE barcode = $1', [barcodes])
@@ -83,7 +83,7 @@ module.exports = function (db) {
     }
   });
 
-  router.get('/edit/:barcode', isLoggedIn, async function (req, res, next) {
+  router.get('/edit/:barcode', isAdmin, async function (req, res, next) {
     try {
       const index = req.params.barcode
       const { rows: dataEdit } = await db.query("SELECT * FROM goods WHERE barcode = $1", [index])
@@ -101,7 +101,7 @@ module.exports = function (db) {
     }
   });
 
-  router.post('/edit/:barcode', isLoggedIn, async function (req, res, next) {
+  router.post('/edit/:barcode', isAdmin, async function (req, res, next) {
     try {
       const index = req.params.barcode
       const { name, stock, purchaseprice, sellingprice, unit } = req.body
@@ -132,7 +132,7 @@ module.exports = function (db) {
     }
   });
 
-  router.get('/delete/:barcode', isLoggedIn, async function (req, res, next) {
+  router.get('/delete/:barcode', isAdmin, async function (req, res, next) {
     try {
       const index = req.params.barcode
       await db.query("DELETE FROM goods WHERE barcode = $1", [index])
