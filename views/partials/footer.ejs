@@ -22,6 +22,39 @@
 <!-- Page level custom scripts -->
 <script src="/js/demo/datatables-demo.js"></script>
 
+<script>
+    $.get('/notifications').done((data) => {
+        let html = ''
+        data.forEach(item => {
+            html += `
+            <a class="dropdown-item d-flex align-items-center" href="/purchases/create">
+                <div class="mr-3">
+                    <div class="icon-circle bg-warning">
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="small text-gray-500">Barcode: ${item.barcode}</div>
+                     Stock Alert: <strong>${item.name}</strong>
+                     <br>
+                     only have stock: <strong>${item.stock}.</strong>
+                </div>
+            </a>
+            `
+        });
+        $('#notifAlert').html(html)
+    })
+    $.get('/notifications/count').done((data) => {
+        let html = ''
+        data.forEach(item => {
+            html += `
+            <span class="badge badge-danger badge-counter">${data[0].count}</span>
+            `
+        });
+        $('#notifCount').html(html)
+    })
+</script>
+
 </body>
 
 </html>
