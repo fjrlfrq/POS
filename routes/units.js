@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { isLoggedIn } = require('../helpers/util')
+const { isAdmin } = require('../helpers/util')
 const saltRounds = 10;
 
 module.exports = function (db) {
 
-  router.get('/', isLoggedIn, function (req, res, next) {
+  router.get('/', isAdmin, function (req, res, next) {
     res.render('Units/units', {user: req.session.user, currentPage: 'POS - Units'});
   });
 
@@ -37,7 +37,7 @@ module.exports = function (db) {
     res.json(response)
   })
 
-  router.get('/add',isLoggedIn, function (req, res, next) {
+  router.get('/add',isAdmin, function (req, res, next) {
     res.render('Units/add', {
       user: req.session.user,
       currentPage: 'POS - Units',
@@ -46,7 +46,7 @@ module.exports = function (db) {
   });
   });
 
-  router.post('/add', isLoggedIn, async function (req, res, next) {
+  router.post('/add', isAdmin, async function (req, res, next) {
     try {
       const { units, names, notes } = req.body
       const datadb = await db.query('SELECT * FROM units where unit = $1', [units])
@@ -62,7 +62,7 @@ module.exports = function (db) {
     }
   });
 
-  router.get('/edit/:unit', isLoggedIn, async function (req, res, next) {
+  router.get('/edit/:unit', isAdmin, async function (req, res, next) {
     try {
       const index = req.params.unit
       const {rows: dataedit} = await db.query("SELECT * FROM units WHERE unit = $1", [index])
@@ -73,7 +73,7 @@ module.exports = function (db) {
     }
   });
 
-  router.post('/edit/:unit', isLoggedIn, async function (req, res, next) {
+  router.post('/edit/:unit', isAdmin, async function (req, res, next) {
     try {
       const index = req.params.unit
       const { unit, name, note } = req.body
@@ -85,7 +85,7 @@ module.exports = function (db) {
     }
   });
 
-  router.get('/delete/:unit', isLoggedIn, async function (req, res, next) {
+  router.get('/delete/:unit', isAdmin, async function (req, res, next) {
     try {
       const unit = req.params.unit
       await db.query("DELETE FROM units WHERE unit = $1", [unit])
