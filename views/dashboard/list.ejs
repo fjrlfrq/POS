@@ -73,7 +73,7 @@
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 PURCHASES</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <%= currencyFormatter.format(purchases.totalpurchases ,{ code: 'IDR' })
+                                                <%= currencyFormatter.format(totalPurchases ,{ code: 'IDR' })
                                                     %>
                                             </div>
                                         </div>
@@ -94,7 +94,7 @@
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 SALES</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <%= currencyFormatter.format(sales.totalsales ,{ code: 'IDR' }) %>
+                                                <%= currencyFormatter.format(totalSales ,{ code: 'IDR' }) %>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -134,7 +134,7 @@
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 Pending Requests</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <%= invoice.totalinvoice%>
+                                                <%= totalInvoice%>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -254,11 +254,11 @@
                                         <tr>
                                             <th>Total</th>
                                             <th>
-                                                <%= currencyFormatter.format(purchases.totalpurchases ,{ code: 'IDR' })
+                                                <%= currencyFormatter.format(totalPurchases ,{ code: 'IDR' })
                                                     %>
                                             </th>
                                             <th>
-                                                <%= currencyFormatter.format(sales.totalsales ,{ code: 'IDR' }) %>
+                                                <%= currencyFormatter.format(totalSales ,{ code: 'IDR' }) %>
                                             </th>
                                             <th>
                                                 <%= currencyFormatter.format(totalearnings ,{ code: 'IDR' }) %>
