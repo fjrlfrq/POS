@@ -61,6 +61,7 @@
                 $(document).ready(function () {
                     $('#purchasestable').DataTable({
                         "lengthMenu": [[3, 10, 100], [3, 10, "All"]],
+                        "order": [[1, 'desc']],
                         "processing": true,
                         "serverSide": true,
                         "ajax": "/purchases/datatable",
